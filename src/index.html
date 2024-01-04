@@ -6,19 +6,26 @@
         <meta name='viewport' content='width=device-width, initial-scale=1.0' />
         <link rel="stylesheet" href="scss/index.scss"/>  
         <link rel="icon" type="image/png" href="./assets/img/favicon.png">
-   
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js" integrity="sha512-Abr21JO2YqcJ03XGZRPuZSWKBhJpUAR6+2wH5zBeO4wAw4oksr8PRdF+BKIRsxvCdq+Mv4670rZ+dLnIyabbGw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://unpkg.com/leaflet.wms"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.js" integrity="sha512-eYE5o0mD7FFys0tVot8r4AnRXzVVXhjVpzNK+AcHkg4zNLvUAaCOJyLFKjmfpJMj6L/tuCzMN7LULBvNDhy5pA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     </head>
     <body>
+        
         <!-- Page Content -->
         <div id="content">
         <!-- loading -->
+        <button id="open-modal-button">Abrir</button>
         <div class="loadingio-spinner-spin hide" id="loading-spinner"><div class="ldio-3z7uhzj17ix"><div><div></div></div><div><div></div></div><div><div></div></div><div><div></div></div><div><div></div></div><div><div></div></div></div></div>           
             <!-- map -->
             <div id="map" class="nonactive"></div>
+           
                 
         </div>
 
         <script src="index.js"></script>
+        
     </body>
 
 </html>

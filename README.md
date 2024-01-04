@@ -59,6 +59,10 @@ Para desplegar el proyecto, ejecute la siguiente instrucción:
 ### 2.2. Resultado esperado
 Responder el correo de donde le enviaron la prueba con el link el repositorio que contiene la solución y una imagen resumen del resultado 
 
+### Resultados:
 
+Se cumplieron la mayoria de las instrucciones de la prueba, se me dificultó cargar las capas del geovisor basado en la url https://geoservicios.yopal.gov.co/geoserver/web/ hice una investigación exhausta pero considero que no se pudo solucionar por problemas de conflictos entre las diferentes capas, de igual manera dejo planteada mi solución en el código.
+
+Se realiza la muestra de los códigos catastrales pero no de la forma en que se solicita partiendo de que no se ha logrado, de igual manera dejo planteada mi solución en el código.
 
 
