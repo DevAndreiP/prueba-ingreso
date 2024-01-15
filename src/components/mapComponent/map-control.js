@@ -9,8 +9,9 @@ import { carto_light } from './layers/control-layers'
 import { dynamicMarker } from './controls/markers'
 import { minimap } from './controls/minimap'
 import { imgIcon } from './controls/icons/imgIcon'
-import 'leaflet-ajax'
-console.log('leaflet-ajax loaded successfully')
+import './L.TileLayer.BetterWMS';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
 
 const openModalButton = document.getElementById('open-modal-button')
 
@@ -19,49 +20,27 @@ const L = require('leaflet')
 //Localizar y cambiar el mapa por el municipio de Repelón
 
 export const map = L.map('map', {
-    center: [10.494444, -75.124167], //coordenadas de REPELON
+    center: [5.33775, -72.39586], //coordenadas de REPELON
     zoom: 15,
     zoomControl: true,
     layers: [carto_light]
 })
 // Agregar servicio WMS - gc_predios_catastro para cargar la capa al geovisor
-const gc_predios_catastro = L.tileLayer.wms('http://localhost:1234/geoserver/yopal/wms', {
+const gc_predios_catastro = L.tileLayer.wms('https://geoservicios.yopal.gov.co/geoserver/wms', {
     layers: 'yopal:gc_predios_catastro',
     format: 'image/png',
-    transparent: true
-})
+    transparent: true,
+});
+
+// Agregar servicio WMS - u_perimetro para cargar la capa al geovisor
+const u_perimetro = L.tileLayer.wms('https://geoservicios.yopal.gov.co/geoserver/wms', {
+    layers: 'yopal:u_perimetro',
+    format: 'image/png',
+    transparent: true,
+});
 
 gc_predios_catastro.addTo(map)
-
-// geoJSON para mostrar el código catastral y el código catastral anterior.
-const geoJsonLayer = new L.geoJSON.ajax('https://geoservicios.yopal.gov.co/geoserver/yopal/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=yopal%3Agc_predios_catastro&maxFeatures=50&outputFormat=application%2Fjson', {
-    onEachFeature: function (feature, layer) {
-        // Bind Popup por defecto
-        // Asocia un evento de clic para mostrar el modal personalizado
-        openModalButton.addEventListener('click', function () {
-            // Llama a la función showFeatureModal con datos de ejemplo
-            showFeatureModal(openModalButton, feature.properties)
-        })
-    }
-}).addTo(map)
-
-function showFeatureModal(parentElement, properties) {
-    const modal = document.createElement('div')
-    const modalContent = `<div>
-        <p>Código Catastral:${properties.codigo_catastral}</p>
-        <p>Código Catastral Anterior:${properties.codigo_catastral_anterior}</p></div>`
-
-    modal.innerHTML = modalContent
-    modal.className = 'custom-modal'
-    parentElement.appendChild(modal)
-
-    modal.style.backgroundColor = 'white'
-    modal.style.padding = '20px'
-    modal.style.border = '1px solid #ccc'
-    modal.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)'
-    modal.style.zIndex = '1000'
-
-}
+u_perimetro.addTo(map)
 
 dynamicMarker(imgIcon('https://leafletjs.com/examples/custom-icons/leaf-green.png'), [10.494444, -75.124167], 0).addTo(map)
 
@@ -73,12 +52,8 @@ minimap.addTo(map)
 // Agregar control de escala
 new L.control.scale({ imperial: false }).addTo(map)
 
-// Agregar servicio WMS - u_perimetro para cargar la capa al geovisor
-const u_perimetro = L.tileLayer.wms('http://localhost:1234/geoserver/yopal/wms', {
-    layers: 'yopal:u_perimetro',
-    format: 'image/png',
-    transparent: true
-})
+
+
 //2.3 adicionar otro plugin de leaflet 
 
 const basemaps = {
@@ -93,3 +68,38 @@ const basemaps = {
     })
 }
 L.control.layers(basemaps, { 'gc_predios_catastro': gc_predios_catastro, 'u_perimetro': u_perimetro }, { position: 'topright' }).addTo(map)
+
+map.on('click', function (e) {
+    // Obtén información detallada del servicio WFS en el lugar del clic
+    const url = `https://geoservicios.yopal.gov.co/geoserver/yopal/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=yopal%3Agc_predios_catastro&maxFeatures=50&outputFormat=application%2Fjson&bbox=${e.latlng.lng},${e.latlng.lat},${e.latlng.lng},${e.latlng.lat}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // información  del predio
+            const codigo_catastral = data.features[0].properties.codigo_catastral;
+            const codigo_catastral_anterior = data.features[0].properties.codigo_catastral_anterior;
+
+            // Muestra el modal con la información
+            showModal(codigo_catastral, codigo_catastral_anterior);
+        })
+        .catch(error => {
+            console.error('Error al obtener información del predio', error.message);
+            // Puedes mostrar un mensaje de error al usuario o realizar otras acciones según tus necesidades
+        });
+});
+
+function showModal(codigo_catastral, codigo_catastral_anterior) {
+
+    document.getElementById('modalCodigoCatastral').innerText = codigo_catastral;
+    document.getElementById('modalCodigoCatastralAnterior').innerText = codigo_catastral_anterior;
+
+    // Muestra el modal
+    const myModal = new bootstrap.Modal(document.getElementById('myModal'));
+    myModal.show();
+    document.getElementById('myModal').style.zIndex = '10000';
+}
+
+
+
+
